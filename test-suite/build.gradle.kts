@@ -1,5 +1,19 @@
 plugins {
     `java-library`
+    id("org.sonatype.gradle.plugins.scan")
+}
+
+val ossIndexUsername = System.getenv("OSS_INDEX_USERNAME") ?: project.properties["ossIndexUsername"] as String?
+val ossIndexPassword = System.getenv("OSS_INDEX_PASSWORD") ?: project.properties["ossIndexPassword"] as String?
+val sonatypePluginConfigured = ossIndexUsername != null && ossIndexPassword != null
+
+ossIndexAudit {
+    if (sonatypePluginConfigured) {
+        username = ossIndexUsername
+        password = ossIndexPassword
+    } else {
+        tasks.named("ossIndexAudit").configure { enabled = false }
+    }
 }
 
 repositories {
